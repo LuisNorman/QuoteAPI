@@ -34,8 +34,8 @@ class QuoteID {
     }
 }
 // QUOTE SERVICE CLASS
-@Path("/quotes")
-@Consumes("text/plain")
+@Path("/quotes")  // path = quotes
+@Consumes("text/plain") // all text is read in plaind
 @Produces(MediaType.APPLICATION_JSON)
 public class QuoteService {
 
@@ -77,6 +77,27 @@ public class QuoteService {
         return quotes;
     }
 
+
+    // Pagination quote
+    @GET
+    @Path("/getAllQuotes/page/{page}/per_page/{per_page}") // quotes/getAllQuotes/?page=2?per_page=5
+    public List<QuoteObject> getAllQuotes(@QueryParam("page") String page, @QueryParam("per_page") int per_page) {
+        List<QuoteObject> result = new ArrayList<>();
+        int total = per_page * quotes.size();
+
+        if (total >= per_page) {
+            for (int i=total/per_page; i<per_page; ++i) {
+                QuoteObject current = quoteMap.get(i);
+                result.add(current);
+            }
+        }
+        else {
+            //show what we have
+        }
+        return result;
+    }
+
+
     // Get a single quote by its identifier
     @GET
     @Path("/getQuoteByID/{id}") // quotes/getQuoteByID/1
@@ -98,10 +119,9 @@ public class QuoteService {
     }
 
     // Replace a quote with a given identifier with a new quote
-    @GET
     @POST
-    @Path("/replaceQuote/id/{id}/newQuote/{newQuote}/")  // quotes/replaceQuote/id?=1/newQuote?="The new quote"
-    public QuoteObject updateQuote(@QueryParam("id") int id, @QueryParam("newQuote") QuoteObject newQuote) {
+    @Path("/replaceQuote/id/{id}/newQuote/{newQuote}")  // quotes/replaceQuote/id?=1/newQuote?="The new quote"
+    public QuoteObject updateQuote(@QueryParam("id") int id, @QueryParam("newQuote") QuoteObject newQuote) { // false error
         quoteMap.put(id, newQuote); // change quote in map
 
         // Loop and find quote to change in list and change it
